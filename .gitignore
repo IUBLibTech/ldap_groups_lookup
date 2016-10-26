@@ -1,0 +1,6 @@
+# YARD folders
+doc/
+.yardoc/
+
+# temporary files
+*.swp
