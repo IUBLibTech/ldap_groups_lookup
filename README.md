@@ -11,6 +11,7 @@ end
 u = User.new
 u.ldap_lookup_key = 'some_username'
 u.ldap_groups
+u.member_of_ldap_group?(['Some-Group'])
 ```
 
 The LDAP search will be run by the value of #ldap_lookup_key, so your instance object must provide that through some means:
@@ -24,4 +25,5 @@ end
 
 u = User.find_by(username: 'some_username')
 u.ldap_groups
+u.member_of_ldap_group?(['Some-Group'])
 ```

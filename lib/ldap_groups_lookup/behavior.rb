@@ -12,5 +12,16 @@ module LDAPGroupsLookup
           LDAPGroupsLookup.ldap_member_of(ldap_lookup_key)
       ).sort
     end
+
+    # Checks if a user is in a group's membership tree
+    # @param [Array] groups is a list of group CN strings to search within
+    # @return [Boolean]
+    def member_of_ldap_group?(groups)
+      return false unless respond_to? :ldap_lookup_key
+      return false if LDAPGroupsLookup.service.nil?
+      groups = [groups] if groups.is_a? String
+      dn = LDAPGroupsLookup.lookup_dn ldap_lookup_key
+      return LDAPGroupsLookup.walk_ldap_members(groups, dn)
+    end
   end
 end
