@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files -z`.split("\x0")
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
-  gem.required_ruby_version = '2.3.1'
+  gem.required_ruby_version = '>= 2.3.0'
 
   gem.add_dependency 'net-ldap'
   gem.add_development_dependency 'rake'

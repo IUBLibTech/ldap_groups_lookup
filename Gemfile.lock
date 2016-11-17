@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ldap_groups_lookup (0.2.0)
+    ldap_groups_lookup (0.3.0)
       net-ldap
 
 GEM

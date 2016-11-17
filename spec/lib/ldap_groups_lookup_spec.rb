@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'ldap_groups_lookup/behavior'
+require 'pry'
 
 RSpec.describe LDAPGroupsLookup do
   let(:user_class) do
@@ -12,44 +13,72 @@ RSpec.describe LDAPGroupsLookup do
   end
   let(:user) { user_class.new }
 
+  # Load the example config from fixtures
+  let(:config) { YAML.load(ERB.new(File.read(File.join(File.dirname(__dir__), 'fixtures', 'ldap_groups_lookup.yml.example'))).result) }
+
+  before do
+    allow(LDAPGroupsLookup).to receive(:config).and_return(config)
+  end
+
+  describe 'LDAPGroupsLookup.service' do
+    context 'when the config file is missing' do
+      before do
+        allow(LDAPGroupsLookup).to receive(:config).and_call_original
+        expect(File).to receive(:exists?).with(/config\/ldap_groups_lookup\.yml$/)
+      end
+      it 'should return nil' do
+        expect(LDAPGroupsLookup.service).to be_nil
+      end
+    end
+    context 'when disabled in the configuration file' do
+      before do
+        config[:enabled] = false
+      end
+      it 'should return nil' do
+        expect(LDAPGroupsLookup.service).to be_nil
+      end
+    end
+    context 'when enabled in the configuration file' do
+      it 'should be enabled' do
+        expect(config[:enabled]).to eq(true)
+      end
+      it 'should return a Net::LDAP instance' do
+        expect(LDAPGroupsLookup.service).to be_an_instance_of(Net::LDAP)
+      end
+    end
+  end
+
   describe '#ldap_groups' do
     before(:each) do
       entry = Net::LDAP::Entry.new('CN=user,DC=ads,DC=example,DC=net')
       entry['memberof'] = ['CN=Group1,DC=ads,DC=example,DC=net',
                            'CN=Group2,DC=ads,DC=example,DC=net']
       allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
-      allow(LDAPGroupsLookup).to receive(:config)
-        .and_return(YAML.load(ERB.new(File.read(File.join(File.dirname(__dir__), 'fixtures', 'ldap_groups_lookup.yml.example'))).result))
     end
     context 'when subject does not provide ldap_lookup_key' do
       before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
       it 'should return []' do
-        expect(user.send(:ldap_groups)).to eq([])
+        expect(user.ldap_groups).to eq([])
       end
     end
     context 'when subject provides ldap_lookup_key' do
       context 'when LDAP is not configured' do
         before(:each) do
-          allow(LDAPGroupsLookup).to receive(:service).and_return(nil)
+          config[:enabled] = false
         end
         it 'should return []' do
-          expect(user.send(:ldap_groups)).to eq([])
+          expect(user.ldap_groups).to eq([])
         end
       end
       context 'when LDAP is configured' do
-        specify 'user should belong to Group1 and Group2 in mock LDAP' do
-          expect(user.send(:ldap_groups)).to eq(%w(Group1 Group2))
+        it 'user should belong to Group1 and Group2 in mock LDAP' do
+          expect(user.ldap_groups).to eq(%w(Group1 Group2))
         end
       end
     end
   end
 
   describe '#member_of_ldap_group?' do
-    before(:each) do
-      allow(LDAPGroupsLookup).to receive(:config)
-       .and_return(YAML.load(ERB.new(File.read(File.join(File.dirname(__dir__), 'fixtures', 'ldap_groups_lookup.yml.example'))).result))
-    end
-
     context 'when subject does not provide ldap_lookup_key' do
       before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
       it 'should return false' do
@@ -59,7 +88,7 @@ RSpec.describe LDAPGroupsLookup do
     context 'when subject provides ldap_lookup_key' do
       context 'when LDAP is not configured' do
         before(:each) do
-          allow(LDAPGroupsLookup).to receive(:service).and_return(nil)
+          config[:enabled] = false
         end
         it 'should return false' do
           expect(user.member_of_ldap_group?('Test-Group')).to eq(false)
