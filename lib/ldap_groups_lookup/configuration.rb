@@ -3,6 +3,35 @@ require 'yaml'
 # Provides access to the configuration YAML file.
 module LDAPGroupsLookup
   module Configuration
+
+    # Attempts to create a connection to LDAP and returns a cached Net::LDAP instance if successful.
+    def service
+      return nil if config[:enabled] == false
+      if @ldap_service.nil?
+        @ldap_service = Net::LDAP.new(host: config[:host], auth: config[:auth])
+        raise Net::LDAP::LdapError unless @ldap_service.bind
+      end
+      @ldap_service
+    end
+
+    # Loads LDAP host and authentication configuration
+    def config
+      if @config.nil?
+        if defined? Rails
+          configure(Rails.root.join('config', 'ldap_groups_lookup.yml').to_s)
+        else
+          configure(File.join(__dir__, 'config', 'ldap_groups_lookup.yml').to_s)
+        end
+      end
+      @config
+    end
+
+    # Clears internal cached objects.
+    def reset
+      @ldap_service = nil
+      @config = nil
+    end
+
     def group_tree
       "#{config[:group_ou]},#{tree}"
     end
@@ -13,26 +42,6 @@ module LDAPGroupsLookup
 
     def tree
       config[:tree]
-    end
-
-    def service
-      return nil if config[:enabled] == false
-      if @ldap_service.nil?
-        @ldap_service = Net::LDAP.new(host: config[:host], auth: config[:auth])
-      end
-      @ldap_service
-    end
-
-    def config
-      if @config.nil?
-        if defined? Rails
-          configure(Rails.root.join('config', 'ldap_groups_lookup.yml').to_s)
-        else
-          configure(File.join(__dir__, 'config', 'ldap_groups_lookup.yml').to_s)
-        end
-
-      end
-      @config
     end
 
     private

@@ -20,7 +20,11 @@ RSpec.describe LDAPGroupsLookup do
     allow(LDAPGroupsLookup).to receive(:config).and_return(config)
   end
 
-  describe 'LDAPGroupsLookup.service' do
+  after do
+    LDAPGroupsLookup.reset
+  end
+
+  describe '#service' do
     context 'when the config file is missing' do
       before do
         allow(LDAPGroupsLookup).to receive(:config).and_call_original
@@ -42,8 +46,21 @@ RSpec.describe LDAPGroupsLookup do
       it 'should be enabled' do
         expect(config[:enabled]).to eq(true)
       end
-      it 'should return a Net::LDAP instance' do
-        expect(LDAPGroupsLookup.service).to be_an_instance_of(Net::LDAP)
+      context 'when the auth credentials are incorrect' do
+        before do
+          allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(false)
+        end
+        it 'should raise an LdapError' do
+          expect { LDAPGroupsLookup.service }.to raise_error(Net::LDAP::LdapError)
+        end
+      end
+      context 'when the auth credentials are correct' do
+        before do
+          allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(true)
+        end
+        it 'should return a Net::LDAP instance' do
+          expect(LDAPGroupsLookup.service).to be_an_instance_of(Net::LDAP)
+        end
       end
     end
   end
@@ -54,6 +71,7 @@ RSpec.describe LDAPGroupsLookup do
       entry['memberof'] = ['CN=Group1,DC=ads,DC=example,DC=net',
                            'CN=Group2,DC=ads,DC=example,DC=net']
       allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
+      allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(true)
     end
     context 'when subject does not provide ldap_lookup_key' do
       before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
