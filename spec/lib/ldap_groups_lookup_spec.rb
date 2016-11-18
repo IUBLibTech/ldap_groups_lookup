@@ -51,7 +51,7 @@ RSpec.describe LDAPGroupsLookup do
           allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(false)
         end
         it 'should raise an LdapError' do
-          expect { LDAPGroupsLookup.service }.to raise_error(Net::LDAP::LdapError)
+          expect { LDAPGroupsLookup.service }.to raise_error(Net::LDAP::Error)
         end
       end
       context 'when the auth credentials are correct' do
