@@ -72,6 +72,8 @@ module LDAPGroupsLookup
       return [] if entry.nil?
 
       field_name = entry.attribute_names[1] # Is this always ordered [dn, member]?
+      return [] if field_name.nil? # Sometimes member is not present.
+
       range_end = field_name.to_s.match(/^member;range=\d+-([0-9*]+)$/)[1]
       # print "#{start}-#{range_end}\n"
       members = entry[field_name]#.collect { |mo| mo.split(',').first.split('=')[1] }

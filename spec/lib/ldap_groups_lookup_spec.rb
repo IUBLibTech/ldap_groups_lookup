@@ -132,6 +132,8 @@ RSpec.describe LDAPGroupsLookup do
 
           @top_group = Net::LDAP::Entry.new('CN=Top-Group,OU=Groups,DC=ads,DC=example,DC=net')
           @top_group['member;range=0-*'] = ['CN=Nested-Group,OU=Groups,DC=ads,DC=example,DC=net']
+
+          @no_member_group = Net::LDAP::Entry.new('CN=No-Member-Group,OU=Groups,DC=ads,DC=example,DC=net')
         end
         context 'when searching for a group that does not exist' do
           it 'should return false' do
@@ -145,6 +147,13 @@ RSpec.describe LDAPGroupsLookup do
             expect(@service).to receive(:search).with(
                 hash_including(filter: Net::LDAP::Filter.equals('cn', 'Other-Group'))).and_return([@other_group])
             expect(user.member_of_ldap_group?('Other-Group')).to eq(false)
+          end
+        end
+        context 'when searching for a group that has no members' do
+          it 'should return false' do
+            expect(@service).to receive(:search).with(
+                hash_including(filter: Net::LDAP::Filter.equals('cn', 'No-Member-Group'))).and_return([@no_member_group])
+            expect(user.member_of_ldap_group?('No-Member-Group')).to eq(false)
           end
         end
         context 'when searching for a group that user is a direct member of on the second page' do
