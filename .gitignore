@@ -1,3 +1,7 @@
+Gemfile.lock
+.ruby-version
+.ruby-gemset
+
 # YARD folders
 doc/
 .yardoc/
