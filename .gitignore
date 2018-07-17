@@ -1,3 +1,5 @@
+config
+
 Gemfile.lock
 .ruby-version
 .ruby-gemset
@@ -8,3 +10,4 @@ doc/
 
 # temporary files
 *.swp
+*.gem
