@@ -33,6 +33,13 @@ module LDAPGroupsLookup
       service.search(base: tree, filter: Net::LDAP::Filter.equals('cn', cn), attributes: 'dn').first&.dn
     end
 
+    # Returns the mail for a given CN attribute
+    def lookup_mail(cn)
+      service&.search(base: tree,
+                     filter: Net::LDAP::Filter.equals('cn', cn),
+                     attributes: 'mail')&.first&.mail&.first.to_s
+    end
+
     # Strips a DN string down to just its CN segment.
     def dn_to_cn(dn)
       dn.match(/CN=(.+?),/)[1]

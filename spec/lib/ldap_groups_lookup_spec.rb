@@ -65,6 +65,36 @@ RSpec.describe LDAPGroupsLookup do
     end
   end
 
+  describe '#ldap_mail' do
+    before(:each) do
+      entry = Net::LDAP::Entry.new('CN=user,DC=ads,DC=example,DC=net')
+      entry['mail'] = ['user@domain.ext']
+      allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
+      allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(true)
+    end
+    context 'when subject does not provide ldap_lookup_key' do
+      before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
+      it 'should return ''' do
+        expect(user.ldap_mail).to eq('')
+      end
+    end
+    context 'when subject provides ldap_lookup_key' do
+      context 'when LDAP is not configured' do
+        before(:each) do
+          config[:enabled] = false
+        end
+        it 'should return a blank string' do
+          expect(user.ldap_mail).to eq('')
+        end
+      end
+      context 'when LDAP is configured' do
+        it 'user should should have a mail attribute in mock LDAP' do
+          expect(user.ldap_mail).to eq 'user@domain.ext'
+        end
+      end
+    end
+  end
+
   describe '#ldap_groups' do
     before(:each) do
       entry = Net::LDAP::Entry.new('CN=user,DC=ads,DC=example,DC=net')
