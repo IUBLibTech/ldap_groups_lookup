@@ -1,4 +1,5 @@
 require 'yaml'
+require 'erb'
 
 # Provides access to the configuration YAML file.
 module LDAPGroupsLookup
@@ -20,7 +21,7 @@ module LDAPGroupsLookup
         if defined? Rails
           configure(Rails.root.join('config', 'ldap_groups_lookup.yml').to_s)
         else
-          configure(File.join(__dir__, 'config', 'ldap_groups_lookup.yml').to_s)
+          configure(File.join(__dir__, '..', '..', 'config', 'ldap_groups_lookup.yml').to_s)
         end
       end
       @config

@@ -57,7 +57,7 @@ module LDAPGroupsLookup
         next if seen.include? g
         seen << g
         member_groups = members.collect do |mg|
-          dn_to_cn(mg) if mg.include? 'OU=Groups'
+          dn_to_cn(mg) if (mg.include?('OU=Groups') || mg.include?('OU=Applications'))
         end
         member_groups.compact!
         return true if walk_ldap_members(member_groups, dn, seen)
