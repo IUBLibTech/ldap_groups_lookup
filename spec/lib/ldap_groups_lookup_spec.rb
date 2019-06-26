@@ -72,8 +72,14 @@ RSpec.describe LDAPGroupsLookup do
       allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
       allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(true)
     end
-    context 'when subject does not provide ldap_lookup_key' do
+    context 'when subject does not provide ldap_lookup_key method' do
       before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
+      it 'should return ''' do
+        expect(user.ldap_mail).to eq('')
+      end
+    end
+    context 'when subject does not provide ldap_lookup_key value' do
+      before(:each) { allow(user).to receive(:ldap_lookup_key).and_return(nil) }
       it 'should return ''' do
         expect(user.ldap_mail).to eq('')
       end
@@ -103,8 +109,14 @@ RSpec.describe LDAPGroupsLookup do
       allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
       allow_any_instance_of(Net::LDAP).to receive(:bind).and_return(true)
     end
-    context 'when subject does not provide ldap_lookup_key' do
+    context 'when subject does not provide ldap_lookup_key method' do
       before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
+      it 'should return []' do
+        expect(user.ldap_groups).to eq([])
+      end
+    end
+    context 'when subject does not provide ldap_lookup_key value' do
+      before(:each) { allow(user).to receive(:ldap_lookup_key).and_return(nil) }
       it 'should return []' do
         expect(user.ldap_groups).to eq([])
       end
@@ -127,8 +139,14 @@ RSpec.describe LDAPGroupsLookup do
   end
 
   describe '#member_of_ldap_group?' do
-    context 'when subject does not provide ldap_lookup_key' do
+    context 'when subject does not provide ldap_lookup_key method' do
       before(:each) { user.class.send(:remove_method, :ldap_lookup_key) }
+      it 'should return false' do
+        expect(user.member_of_ldap_group?('Test-Group')).to eq(false)
+      end
+    end
+    context 'when subject does not provide ldap_lookup_key value' do
+      before(:each) { allow(user).to receive(:ldap_lookup_key).and_return(nil) }
       it 'should return false' do
         expect(user.member_of_ldap_group?('Test-Group')).to eq(false)
       end
