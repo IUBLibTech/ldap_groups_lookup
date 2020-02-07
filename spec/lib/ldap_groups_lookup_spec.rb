@@ -216,16 +216,39 @@ RSpec.describe LDAPGroupsLookup do
           end
         end
         context 'when searching for a group that user is a nested member of' do
-          it 'should return true' do
+          before do
             expect(@service).to receive(:search).with(
                 hash_including(filter: Net::LDAP::Filter.equals('cn', 'Top-Group'))).and_return([@top_group])
-            expect(@service).to receive(:search).with(
+            allow(@service).to receive(:search).with(
                 hash_including(filter: Net::LDAP::Filter.equals('cn', 'Nested-Group'),
                                attributes: ['member;range=0-*'])).and_return([@nested_group_page_1])
-            expect(@service).to receive(:search).with(
+            allow(@service).to receive(:search).with(
                 hash_including(filter: Net::LDAP::Filter.equals('cn', 'Nested-Group'),
                                attributes: ['member;range=1-*'])).and_return([@nested_group_page_2])
-            expect(user.member_of_ldap_group?('Top-Group')).to eq(true)
+          end
+          context 'when the group is whitelisted' do
+            before do
+              allow(LDAPGroupsLookup).to receive(:member_filter).and_return(['OU=Groups'])
+            end
+            it 'should return true' do
+              expect(user.member_of_ldap_group?('Top-Group')).to eq(true)
+            end
+          end
+          context 'when the whitelist is empty' do
+            before do
+              allow(LDAPGroupsLookup).to receive(:member_filter).and_return([])
+            end
+            it 'should return true (whitelisting is disabled)' do
+              expect(user.member_of_ldap_group?('Top-Group')).to eq(true)
+            end
+          end
+          context 'when the group is not whitelisted' do
+            before do
+              allow(LDAPGroupsLookup).to receive(:member_filter).and_return(['OU=Not-A-Match'])
+            end
+            it 'should return false' do
+              expect(user.member_of_ldap_group?('Top-Group')).to eq(false)
+            end
           end
         end
       end
