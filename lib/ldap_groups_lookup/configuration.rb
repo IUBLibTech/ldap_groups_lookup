@@ -45,8 +45,8 @@ module LDAPGroupsLookup
       config[:tree]
     end
 
-    def member_filter
-      config[:member_filter].to_a
+    def member_whitelist
+      config[:member_whitelist].to_a
     end
 
     private
