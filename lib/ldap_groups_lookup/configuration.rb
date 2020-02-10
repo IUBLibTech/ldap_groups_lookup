@@ -45,6 +45,10 @@ module LDAPGroupsLookup
       config[:tree]
     end
 
+    def member_whitelist
+      config[:member_whitelist].to_a
+    end
+
     private
 
     def configure(value)
