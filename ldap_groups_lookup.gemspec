@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
   gem.required_ruby_version = '>= 2.3.0'
+  gem.metadata      = { "rubygems_mfa_required" => "true" }
 
   gem.add_dependency 'net-ldap'
   gem.add_development_dependency 'rake'
