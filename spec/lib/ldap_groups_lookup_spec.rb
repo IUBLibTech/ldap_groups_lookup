@@ -61,6 +61,15 @@ RSpec.describe LDAPGroupsLookup do
         it 'should return a Net::LDAP instance' do
           expect(LDAPGroupsLookup.service).to be_an_instance_of(Net::LDAP)
         end
+
+        context 'when the :config key is set' do
+          let(:config_hash) { { host: 'localhost', port: 636, encryption: { method: :simple_tls, tls_options: OpenSSL::SSL::SSLContext::DEFAULT_PARAMS } } }
+          before { config[:config] = config_hash }
+          it 'uses that config' do
+            expect(Net::LDAP).to receive(:new).with(config_hash).and_call_original
+            expect(LDAPGroupsLookup.service).to be_an_instance_of(Net::LDAP)
+          end
+        end
       end
     end
   end

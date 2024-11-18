@@ -9,7 +9,11 @@ module LDAPGroupsLookup
     def service
       return nil if config[:enabled] == false
       if @ldap_service.nil?
-        @ldap_service = Net::LDAP.new(host: config[:host], port: config[:port] || Net::LDAP::DefaultPort, auth: config[:auth])
+        if config[:config].is_a? Hash
+          @ldap_service = Net::LDAP.new(**config[:config])
+        else
+          @ldap_service = Net::LDAP.new(host: config[:host], port: config[:port] || Net::LDAP::DefaultPort, auth: config[:auth])
+        end
         raise Net::LDAP::Error unless @ldap_service.bind
       end
       @ldap_service
