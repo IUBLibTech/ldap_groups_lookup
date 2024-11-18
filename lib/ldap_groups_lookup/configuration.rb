@@ -4,6 +4,7 @@ require 'erb'
 # Provides access to the configuration YAML file.
 module LDAPGroupsLookup
   module Configuration
+    attr_writer :config
 
     # Attempts to create a connection to LDAP and returns a cached Net::LDAP instance if successful.
     def service
