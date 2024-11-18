@@ -55,7 +55,7 @@ module LDAPGroupsLookup
       if value.nil? || value.is_a?(Hash)
         @config = value
       elsif value.is_a?(String)
-        if File.exists?(value)
+        if File.exist?(value)
           @config = YAML.load(ERB.new(File.read(value)).result)
         else
           @config = { enabled: false }

@@ -28,7 +28,7 @@ RSpec.describe LDAPGroupsLookup do
     context 'when the config file is missing' do
       before do
         allow(LDAPGroupsLookup).to receive(:config).and_call_original
-        expect(File).to receive(:exists?).with(/config\/ldap_groups_lookup\.yml$/)
+        expect(File).to receive(:exist?).with(/config\/ldap_groups_lookup\.yml$/)
       end
       it 'should return nil' do
         expect(LDAPGroupsLookup.service).to be_nil
