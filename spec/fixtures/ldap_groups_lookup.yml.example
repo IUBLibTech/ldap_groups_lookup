@@ -1,5 +1,6 @@
 :enabled: true
 :host: ads.example.net
+:port: 636
 :auth:
   :method: :simple
   :username: example
