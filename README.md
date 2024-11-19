@@ -1,4 +1,5 @@
 # IU LDAP Groups Lookup
+[![Gem Version](https://badge.fury.io/rb/ldap_groups_lookup.svg)](https://badge.fury.io/rb/ldap_groups_lookup)
 
 ## Usage
 
