@@ -51,7 +51,7 @@ module LDAPGroupsLookup
     end
 
     def member_allowlist
-      config[:member_allowlist].to_a
+      config[:member_allowlist] || ['OU=Groups']
     end
 
     private
