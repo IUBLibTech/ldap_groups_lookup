@@ -57,7 +57,7 @@ module LDAPGroupsLookup
         next if seen.include? g
         seen << g
         member_groups = members.collect do |mg|
-          dn_to_cn(mg) if member_whitelist.empty? || member_whitelist.any? do |fil|
+          dn_to_cn(mg) if member_allowlist.empty? || member_allowlist.any? do |fil|
             mg.include? fil
           end
         end

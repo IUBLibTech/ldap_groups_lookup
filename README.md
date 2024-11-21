@@ -53,7 +53,7 @@ LDAPGroupsLookup.config = {
   tree: 'dc=ads,dc=example,dc=net',
   account_ou: 'ou=Accounts',
   group_ou: 'ou=Groups',
-  member_whitelist: ['OU=Groups']
+  member_allowlist: ['OU=Groups']
 }
 ```
 
@@ -71,7 +71,7 @@ Alternatively, create a file `config/ldap_groups_lookup.yml` that looks like:
 :tree: dc=ads,dc=example,dc=net
 :account_ou: ou=Accounts
 :group_ou: ou=Groups
-:member_whitelist:
+:member_allowlist:
   - OU=Groups
 ```
 Note: The yaml style does not allow for easy configuration of some properties like tls_options or other auth methods.

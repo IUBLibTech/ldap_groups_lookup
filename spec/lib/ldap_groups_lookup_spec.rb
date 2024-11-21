@@ -243,25 +243,25 @@ RSpec.describe LDAPGroupsLookup do
                   hash_including(filter: Net::LDAP::Filter.equals('cn', 'Nested-Group'),
                                  attributes: ['member;range=1-*'])).and_return([@nested_group_page_2])
             end
-            context 'when the group is whitelisted' do
+            context 'when the group is allowlisted' do
               before do
-                allow(LDAPGroupsLookup).to receive(:member_whitelist).and_return(['OU=Groups'])
+                allow(LDAPGroupsLookup).to receive(:member_allowlist).and_return(['OU=Groups'])
               end
               it 'should return true' do
                 expect(user.member_of_ldap_group?('Top-Group')).to eq(true)
               end
             end
-            context 'when the whitelist is empty' do
+            context 'when the allowlist is empty' do
               before do
-                allow(LDAPGroupsLookup).to receive(:member_whitelist).and_return([])
+                allow(LDAPGroupsLookup).to receive(:member_allowlist).and_return([])
               end
-              it 'should return true (whitelisting is disabled)' do
+              it 'should return true (allowlisting is disabled)' do
                 expect(user.member_of_ldap_group?('Top-Group')).to eq(true)
               end
             end
-            context 'when the group is not whitelisted' do
+            context 'when the group is not allowlisted' do
               before do
-                allow(LDAPGroupsLookup).to receive(:member_whitelist).and_return(['OU=Not-A-Match'])
+                allow(LDAPGroupsLookup).to receive(:member_allowlist).and_return(['OU=Not-A-Match'])
               end
               it 'should return false' do
                 expect(user.member_of_ldap_group?('Top-Group')).to eq(false)
