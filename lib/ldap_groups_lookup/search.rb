@@ -30,7 +30,7 @@ module LDAPGroupsLookup
 
     # Returns the DN for the given CN attribute
     def lookup_dn(cn)
-      service.search(base: tree, filter: Net::LDAP::Filter.equals('cn', cn), attributes: 'dn').first&.dn
+      service.search(base: tree, filter: Net::LDAP::Filter.equals('cn', cn), attributes: 'dn')&.first&.dn
     end
 
     # Returns the mail for a given CN attribute
